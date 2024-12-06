@@ -18,6 +18,9 @@ const conn = await pool.getConnection();
 
 app.use(express.urlencoded({ extended: true }));
 
+
+let userId = 1;
+
 // Routes
 app.get('/', (req, res) => {
   res.redirect('/home');
@@ -39,8 +42,13 @@ app.get('/playlist', (req, res) => {
   res.render('playlist.ejs');
 });
 
-app.get('/profile', (req, res) => {
-  res.render('profile.ejs');
+app.get('/profile', async (req, res) => {
+  let sql = `SELECT *
+              FROM user
+              WHERE userId = ?`;
+  let sqlParams = [userId];
+  const [userData] = await conn.query(sql, sqlParams)
+  res.render('profile.ejs', {userData});
 });
 
 app.get('/create', (req, res) => {
