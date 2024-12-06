@@ -11,10 +11,36 @@
 
   <main class="center">
     <h1>Search for Music</h1>
-    <form class="form">
+    <form class="form" action="/search" method="POST">
       <input type="text" name="search" placeholder="Search for songs, artists, or albums" required>
       <button type="submit">Search</button>
     </form>
+
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } else if (releases) { %>
+      <h2>Release Title: <%= releases[currentIndex].title %></h2>
+      <p>Artist: <%= releases[currentIndex]["artist-credit"][0].name %></p>
+    
+      <% if (coverArtUrl) { %>
+        <img src="<%= coverArtUrl %>" alt="Cover Art" style="max-width: 200px; max-height: 200px;">
+      <% } else { %>
+        <p>No cover art available.</p>
+      <% } %>
+    
+      <p>Release ID: <%= releases[currentIndex].id %></p>
+      
+      <% if (currentIndex < releases.length - 1) { %>
+        <form action="/next" method="POST">
+          <input type="hidden" name="currentIndex" value="<%= currentIndex + 1 %>">
+          <button type="submit">Next</button>
+        </form>
+      <% } %>
+
+    <% }  else { %>
+      <p>No results found. Please try another search.</p>
+    <% } %>
+
   </main>
 </body>
 </html>
