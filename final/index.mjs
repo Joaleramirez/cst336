@@ -6,6 +6,16 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
+const pool = mysql.createPool({
+  host: "ethanperegoyprograms.com",
+  user: "ethanper_webuser",
+  password: "JamesPeregoy1",
+  database: "ethanper_music",
+  connectionLimit: 10,
+  waitForConnections: true
+});
+const conn = await pool.getConnection();
+
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
