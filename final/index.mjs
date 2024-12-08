@@ -23,6 +23,7 @@ const pool = mysql.createPool({
 let releases = [];  // Store releases globally to handle pagination
 let currentIndex = 0;  // Track the current release being viewed
 let coverArtUrl = null;
+let genres = [];
 let userId = 1;
 
 // Routes
@@ -44,12 +45,18 @@ app.get('/search', (req, res) => {
 });
 
 // POST route for handling search and displaying results
-app.post('/search', async (req, res) => {
+app.post('/search', async (req, res) => {   
+
     const searchQuery = req.body.search;
+    const searchQueryArtist = req.body.search_artist;
 
     try {
-        // Make the request to the MusicBrainz API using node-fetch
-        const response = await fetch(`https://musicbrainz.org/ws/2/release/?query=release:${searchQuery}&fmt=json`);
+        // Dynamic API construction
+        let apiUrl = `https://musicbrainz.org/ws/2/release/?query=release:${searchQuery} AND status:official&fmt=json`;
+        if (searchQueryArtist) {
+            apiUrl = `https://musicbrainz.org/ws/2/release/?query=artist:${searchQueryArtist} AND release:${searchQuery} AND status:official&fmt=json`;
+        }
+        const response = await fetch(apiUrl);
 
         if (!response.ok) {
             throw new Error('Failed to fetch data from the API');
@@ -61,7 +68,22 @@ app.post('/search', async (req, res) => {
         if (data.releases && data.releases.length > 0) {
             releases = data.releases;  // Store releases globally
             const releaseId = releases[0].id; // First release ID
-            
+            const releaseGroupId = releases[0]['release-group'].id; // Get the release-group ID for genre-fetching
+            console.log("releseGroupId:");
+            console.log(releaseGroupId);
+            // Get genres for that release 
+            try {
+                const releaseGroupResponse = await fetch(`https://musicbrainz.org/ws/2/release-group/${releaseGroupId}?inc=genres&fmt=json`);
+                if (releaseGroupResponse.ok) {
+                    const releaseGroupData = await releaseGroupResponse.json();
+                    if (releaseGroupData.genres) {
+                        genres = releaseGroupData.genres.map(genre => genre.name);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching genres:', error.message);
+            }
+
             // Get cover art
             const coverArtResponse = await fetch(`https://coverartarchive.org/release/${releaseId}`);
             
@@ -79,6 +101,7 @@ app.post('/search', async (req, res) => {
             res.render('search', {
                 releases, // Pass all releases
                 currentIndex, // Start with the first release
+                genres, 
                 coverArtUrl,
                 searchQuery,
                 error: null
