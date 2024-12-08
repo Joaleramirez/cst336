@@ -178,6 +178,22 @@ app.get('/create', (req, res) => {
   res.render('create.ejs');
 });
 
+app.post('/create/new', async(req, res) => {
+    let title = req.body.title;
+    let artist = req.body.artist;
+    let lyrics = req.body.lyrics;
+    let genre = req.body.genre;
+
+    let sql =  `INSERT INTO createSong
+                (name, artist, lyrics, genre, userId)
+                VALUES
+                (?,?,?,?,?)`
+    let sqlParams = [title,artist,lyrics,genre,userId];
+    const [rows] = await conn.query(sql, sqlParams);
+
+    res.render('create.ejs');
+  });
+
 const PORT = 10055;
 app.listen(PORT, () => {
     console.log(`Express server running on port ${PORT}`);
