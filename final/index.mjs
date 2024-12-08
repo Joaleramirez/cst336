@@ -194,6 +194,51 @@ app.post('/create/new', async(req, res) => {
     res.render('create.ejs');
   });
 
+app.get('/create/edit', async(req,res) => {
+    let createId = req.query.createId;
+    let sql = `SELECT *
+                FROM createSong
+                WHERE createId = ?`;
+    let sqlParams = [createId];
+    const [songData] = await conn.query(sql, sqlParams)
+
+    res.render('editCreate.ejs', {songData})
+})
+
+app.post('/create/edit', async(req,res) => {
+    let createId = req.body.createId;
+    let title = req.body.title;
+    let artist = req.body.artist;
+    let lyrics = req.body.lyrics;
+    let genre = req.body.genre;
+    
+    let sql = `UPDATE  createSong
+                SET name = ?,
+                    artist = ?,
+                    lyrics = ?,
+                    genre = ?
+                WHERE createId = ?`;
+    let sqlParams = [title,artist,lyrics,genre,createId];
+    const [songData] = await conn.query(sql, sqlParams)
+
+    let sql2 = `SELECT *
+    FROM user
+    WHERE userId = ?`;
+    let sql2Params = [userId];
+    const [userData] = await conn.query(sql2, sql2Params)
+
+    res.render('profile.ejs', {userData})
+})
+
+app.get('/createdSongs', async(req,res) => {
+    let sql = `SELECT *
+                FROM createSong
+                WHERE userId = ?`;
+    let sqlParams = [userId];
+    const [songs] = await conn.query(sql, sqlParams);
+    
+    res.render('createdSongs.ejs', {songs})
+})
 const PORT = 10055;
 app.listen(PORT, () => {
     console.log(`Express server running on port ${PORT}`);
