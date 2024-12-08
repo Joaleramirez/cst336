@@ -161,8 +161,44 @@ app.post('/next', async (req, res) => {
     }
  });
 
-app.get('/playlist', (req, res) => {
-  res.render('playlist.ejs');
+app.get('/playlists', async (req, res) => {
+    let sql = `SELECT *
+                FROM playlist
+                WHERE userId = ?`;
+    let sqlParams = [userId];
+    const [playlists] = await conn.query(sql, sqlParams)
+
+  res.render('playlists.ejs', {playlists});
+});
+
+app.get('/playlist/open', async (req, res) => {
+    let playlistId = req.query.playlistId;
+    let sql = `SELECT *
+                FROM playlist
+                WHERE playlistId = ?`;
+    let sqlParams = [playlistId];
+    const [playlistData] = await conn.query(sql, sqlParams)
+
+    let sql2 = `SELECT *
+                FROM playlistCreate
+                WHERE playlistId = ?`;
+    let sql2Params = [playlistId];
+    const [songList] = await conn.query(sql2, sql2Params)
+    
+    let sql3 = `SELECT *
+                FROM createSong
+                WHERE `;
+    let sql3Params = [];
+    for (let i = 0; i < songList.length-1; i++) {
+        sql3 = sql3 + ` createId = ? OR`;
+        sql3Params.push(songList[i].createId)
+    }
+    sql3 = sql3 +  ` createId = ?`;
+    sql3Params.push(songList[songList.length-1].createId)
+
+    const [songs] = await conn.query(sql3, sql3Params)
+
+  res.render('playlist.ejs', {playlistData,songs});
 });
 
 app.get('/profile', async (req, res) => {

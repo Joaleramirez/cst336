@@ -3,20 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Playlist - Music 4 Later</title>
+  <title>Playlists - Music 4 Later</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <%- include('./partials/nav') %>
 
   <main class="center">
-    <h1><%-playlistData[0].playlistName%></h1>
-
-      <% for (let song of songs) { %>
-        <%=song.name%></a><br> <br>
+    <h1>Your Playlists</h1>
+      <% for (let playlist of playlists) { %>
+        <a href="/playlist/open?playlistId=<%=playlist.playlistId%>"><%=playlist.playlistName%></a><br> <br>
       <% } %>
-
-    <button>Add Song</button>
+    <button>Create New Playlist</button>
   </main>
 </body>
 </html>
