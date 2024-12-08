@@ -69,8 +69,7 @@ app.post('/search', async (req, res) => {
             releases = data.releases;  // Store releases globally
             const releaseId = releases[0].id; // First release ID
             const releaseGroupId = releases[0]['release-group'].id; // Get the release-group ID for genre-fetching
-            console.log("releseGroupId:");
-            console.log(releaseGroupId);
+
             // Get genres for that release 
             try {
                 const releaseGroupResponse = await fetch(`https://musicbrainz.org/ws/2/release-group/${releaseGroupId}?inc=genres&fmt=json`);
@@ -120,7 +119,7 @@ app.post('/next', async (req, res) => {
     if (currentIndex < releases.length - 1) {
         currentIndex++;  // Move to the next release
         
-        // Get the cover art for the next release
+        // Get the cover art and genres for the next release
         const releaseId = releases[currentIndex].id;
         const coverArtResponse = await fetch(`https://coverartarchive.org/release/${releaseId}`);
         let coverArtUrl = null;
@@ -131,10 +130,25 @@ app.post('/next', async (req, res) => {
                 coverArtUrl = coverArtData.images[0].image;
             }
         }
+
+        // Get genres for that release 
+        const releaseGroupId = releases[currentIndex]['release-group'].id;
+        try {
+            const releaseGroupResponse = await fetch(`https://musicbrainz.org/ws/2/release-group/${releaseGroupId}?inc=genres&fmt=json`);
+            if (releaseGroupResponse.ok) {
+                const releaseGroupData = await releaseGroupResponse.json();
+                if (releaseGroupData.genres) {
+                    genres = releaseGroupData.genres.map(genre => genre.name);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching genres:', error.message);
+        }
  
         // Render the search view with the updated release and cover art
         res.render('search', {
             releases,
+            genres,
             currentIndex,
             coverArtUrl,
             searchQuery: req.body.search, // Pass the search query as well
