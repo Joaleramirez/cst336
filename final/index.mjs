@@ -19,6 +19,8 @@ const pool = mysql.createPool({
   });
   const conn = await pool.getConnection();
 
+app.use(express.urlencoded({ extended: true }));
+
 //GLOBAL VARIABLES
 let releases = [];  // Store releases globally to handle pagination
 let currentIndex = 0;  // Track the current release being viewed
