@@ -185,20 +185,26 @@ app.get('/playlist/open', async (req, res) => {
     let sql2Params = [playlistId];
     const [songList] = await conn.query(sql2, sql2Params)
     
-    let sql3 = `SELECT *
-                FROM createSong
-                WHERE `;
-    let sql3Params = [];
-    for (let i = 0; i < songList.length-1; i++) {
-        sql3 = sql3 + ` createId = ? OR`;
-        sql3Params.push(songList[i].createId)
+    if (songList.length == 0) {
+        let songs = [];
+        res.render('playlist.ejs', {playlistData, songs});
     }
-    sql3 = sql3 +  ` createId = ?`;
-    sql3Params.push(songList[songList.length-1].createId)
+    else {
+        let sql3 = `SELECT *
+                    FROM createSong
+                    WHERE `;
+        let sql3Params = [];
+        for (let i = 0; i < songList.length-1; i++) {
+            sql3 = sql3 + ` createId = ? OR`;
+            sql3Params.push(songList[i].createId)
+        }
+        sql3 = sql3 +  ` createId = ?`;
+        sql3Params.push(songList[songList.length-1].createId)
 
-    const [songs] = await conn.query(sql3, sql3Params)
+        const [songs] = await conn.query(sql3, sql3Params)
 
-  res.render('playlist.ejs', {playlistData,songs});
+    res.render('playlist.ejs', {playlistData,songs});
+    }
 });
 
 app.get('/profile', async (req, res) => {
