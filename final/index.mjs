@@ -35,7 +35,6 @@ let releases = [];
 let currentIndex = 0;  
 let coverArtUrl = null;
 let genres = [];
-let userId = 1;
 
 // Routes
 app.get('/', (req, res) => {
@@ -66,7 +65,7 @@ app.post('/login', async (req, res) => {
 
         // Compare plain text password with the stored password
         if (password === storedPassword) {
-            req.session.fullName = rows[0].firstName + " " + rows[0].lastName;
+            req.session.userId = rows[0].userId;
             req.session.authenticated = true;
             res.render('home.ejs');
             console.log("login successful")
@@ -213,7 +212,7 @@ app.get('/playlists', async (req, res) => {
     let sql = `SELECT *
                 FROM playlist
                 WHERE userId = ?`;
-    let sqlParams = [userId];
+    let sqlParams = [req.session.userId];
     const [playlists] = await conn.query(sql, sqlParams)
 
   res.render('playlists.ejs', {playlists});
@@ -260,7 +259,7 @@ app.get('/profile', async (req, res) => {
         let sql = `SELECT *
                 FROM user
                 WHERE userId = ?`;
-        let sqlParams = [userId];
+        let sqlParams = [req.session.userId];
         const [userData] = await conn.query(sql, sqlParams)
         res.render('profile.ejs', {userData});
     } else {
@@ -269,7 +268,12 @@ app.get('/profile', async (req, res) => {
   });
 
 app.get('/create', (req, res) => {
-  res.render('create.ejs');
+    if ( req.session.authenticated){
+        res.render('create.ejs');
+    }
+    else {
+        res.redirect("/login");
+    }
 });
 
 app.post('/create/new', async(req, res) => {
@@ -282,7 +286,7 @@ app.post('/create/new', async(req, res) => {
                 (name, artist, lyrics, genre, userId)
                 VALUES
                 (?,?,?,?,?)`
-    let sqlParams = [title,artist,lyrics,genre,userId];
+    let sqlParams = [title,artist,lyrics,genre,req.session.userId];
     const [rows] = await conn.query(sql, sqlParams);
 
     res.render('create.ejs');
@@ -318,7 +322,7 @@ app.post('/create/edit', async(req,res) => {
     let sql2 = `SELECT *
     FROM user
     WHERE userId = ?`;
-    let sql2Params = [userId];
+    let sql2Params = [req.session.userId];
     const [userData] = await conn.query(sql2, sql2Params)
 
     res.render('profile.ejs', {userData})
@@ -328,7 +332,7 @@ app.get('/createdSongs', async(req,res) => {
     let sql = `SELECT *
                 FROM createSong
                 WHERE userId = ?`;
-    let sqlParams = [userId];
+    let sqlParams = [req.session.userId];
     const [songs] = await conn.query(sql, sqlParams);
     
     res.render('createdSongs.ejs', {songs})
