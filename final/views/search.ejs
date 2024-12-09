@@ -45,7 +45,9 @@
         </form>
       <% } %>
 
-      <form action="/add_song_btn" method="POST">
+      <form action="/addSong" method="get">
+        <input type="hidden" name="name" value="<%= releases[currentIndex].title %>">
+        <input type="hidden" name="artist" value='<%= releases[currentIndex]["artist-credit"][0].name %>'>
         <button type="submit">Add Song</button>
       </form>
 

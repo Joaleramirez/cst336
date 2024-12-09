@@ -376,6 +376,80 @@ app.get('/createdSongs', async(req,res) => {
     res.render('createdSongs.ejs', {songs})
 })
 
+app.get('/addSong', async(req,res) => {
+    if ( req.session.authenticated){
+        let name = req.query.name;
+        let artist = req.query.artist;
+
+        let sql = `SELECT *
+                FROM playlist
+                WHERE userId = ?`;
+        let sqlParams = [req.session.userId];
+        const [playlists] = await conn.query(sql, sqlParams);
+    
+        res.render('addSong.ejs', {playlists,name,artist})
+    }
+    else {
+        res.redirect("/login");
+    }
+})
+
+app.post('/addSong', async(req,res) => {
+    if ( req.session.authenticated){
+        let name = req.body.name;
+        let artist = req.body.artist;
+        let playlistId = req.body.playlists;
+
+        let sql= `SELECT *
+                    FROM song
+                    WHERE name = ? AND artist = ?`;
+        let sqlParams = [name,artist];
+        const [song] = await conn.query(sql,sqlParams);
+        if (song.length == 0) {
+            let sql = `INSERT INTO song 
+                        (name, artist)
+                        VALUES (?, ?)`;
+            const [query] = await conn.query(sql, sqlParams); 
+            let sql2 = `SELECT *
+                    FROM song
+                    WHERE name = ? AND artist = ?`;
+            let sql2Params = [name,artist];
+            const [song] = await conn.query(sql2,sql2Params);
+
+            let sql3 = `INSERT INTO playlistSong
+                    (playlistId, songId)
+                    VALUES (?, ?)`;
+            let sql3Params = [playlistId,song[0].songId]
+            const [query2] = await conn.query(sql3, sql3Params)
+
+            res.render('home.ejs');
+        }
+        else {
+            let sql2 = `SELECT *
+                    FROM playlistSong
+                    WHERE playlistId = ? AND songId = ?`;
+            let sql2Params = [playlistId, song[0].songId];
+            const [playlistSong] = await conn.query(sql2,sql2Params);
+            if (playlistSong.length == 1) {
+                console.log ("Song already in playlist");
+                res.render('home.ejs')
+            }
+            else {
+                let sql3 = `INSERT INTO playlistSong
+                    (playlistId, songId)
+                    VALUES (?, ?)`;
+                let sql3Params = [playlistId,song[0].songId]
+                const [query2] = await conn.query(sql3, sql3Params)
+                
+                res.render('home.ejs');
+            }
+        }
+    }
+    else {
+        res.redirect("/login");
+    }
+})
+
 //Middleware functions
 function isAuthenticated(req, res, next) {
     if (req.session.authenticated) {
