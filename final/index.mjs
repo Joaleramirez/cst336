@@ -81,7 +81,34 @@ app.post('/login', async (req, res) => {
 
 app.get('/signup', (req, res) => {
     res.render('signup.ejs');
-  });
+});
+
+app.post('/signup', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    console.log(username);
+    console.log(password);
+
+    let sql = `SELECT *
+               FROM user
+               WHERE user_name = ? 
+               `;
+    const [rows] = await conn.query(sql, [username]); 
+
+    if (rows.length > 0) {  //it found at least one record
+        res.redirect("/signup"); // Username is taken
+        console.log("Username is taken")
+    } 
+    else {
+        let sql = `INSERT INTO user (user_name, user_pass)
+        VALUES (?, ?)
+        `;
+        const [query] = await conn.query(sql, [username, password]); 
+
+        res.redirect("/login"); // Account created, move to sign in
+        console.log("User credentials added to database")
+    }
+ });
   
 
 // GET route for search form
