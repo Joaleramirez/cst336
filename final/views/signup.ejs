@@ -11,7 +11,7 @@
 
   <main class="center">
     <h1>Sign Up</h1>
-    <form class="form" action="/signup" method="POST">
+    <form class="form" action="/signup" method="POST" id="signupForm">
       <label for="user_name">Username:</label>
       <input type="text" id="username" name="username" required>
       <br><br>
@@ -23,5 +23,46 @@
       <button type="submit" class="cta-button">Sign Up</button>
     </form>
   </main>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('signupForm');
+      const submitButton = form.querySelector('.cta-button');
+  
+      form.addEventListener('submit', function(event) {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+  
+        if (username.length < 3) {
+          alert('Username must be at least 3 characters long.');
+          return;
+        }
+
+        if (username.length > 20) {
+          alert('Username must be at no more than 20 characters long.');
+          return;
+        }
+  
+        if (password.length < 6) {
+          alert('Password must be at least 6 characters long.');
+          return;
+        }
+
+        let condition = false;
+        for (let i = 0; i < password.length; i++) {
+          if (password[i] === '!') {
+            condition = true;
+          }
+        }
+        if(!condition) {
+          alert('Password must contain an exclamation mark');
+          return;
+        }
+        alert('Account Created Successfully!');
+        form.submit();
+      });
+    });
+  </script>
 </body>
 </html>
