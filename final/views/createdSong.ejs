@@ -3,20 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Playlist - Music 4 Later</title>
+  <title>Created Song - Music 4 Later</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <%- include('./partials/nav') %>
 
   <main class="center">
-    <h1><%-playlistData[0].playlistName%></h1>
-
-      <% for (let song of songs) { %>
-        <a href="/create/view?createId=<%=song.createId%>"><%=song.name%></a><br><br>
-      <% } %>
-
-    <button>Add Song</button>
+    <h1><%-song[0].name%></h1>
+    <p>Artist: <%-song[0].artist%></p>
+    <p>Genre: <%-song[0].genre%></p>
+    <h3>Lyrics:</h3>
+    <p><%-song[0].lyrics%></p>
+    
   </main>
 </body>
 </html>
