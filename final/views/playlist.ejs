@@ -12,8 +12,13 @@
   <main class="center">
     <h1><%-playlistData[0].playlistName%></h1>
 
+      <h2>Created Songs</h2>
+      <% for (let song of createdSongs) { %>
+        <a href="/create/view?createId=<%=song.createId%>"><%=song.name%></a> - <%=song.artist%><br><br>
+      <% } %>
+      <h2>Precreated Songs</h2>
       <% for (let song of songs) { %>
-        <a href="/create/view?createId=<%=song.createId%>"><%=song.name%></a><br><br>
+        <p><%=song.name%> - <%=song.artist%></p>
       <% } %>
 
     <button>Add Song</button>
