@@ -160,6 +160,10 @@ app.post('/search', async (req, res) => {
     }
 });
 
+app.post('/add_song_btn', (req, res) => {
+    res.redirect('home');
+});
+
 // POST route for the "Next" button to load the next release
 app.post('/next', async (req, res) => {
     if (currentIndex < releases.length - 1) {
