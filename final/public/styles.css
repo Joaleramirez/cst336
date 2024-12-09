@@ -6,6 +6,11 @@ body {
     background-color: #1d1f33; /* Dark Blue */
     color: #f0e68c; /* Gold */
   }
+
+  footer {
+    position: fixed;
+    bottom: 0;
+  }
   
   a {
     text-decoration: none;
