@@ -568,6 +568,14 @@ app.post('/playlist/new', async(req, res) => {
     res.render('home.ejs');
   });
 
+app.get('/allCreatedSongs', async(req,res) => {
+    let sql = `SELECT *
+                FROM createSong`;
+    const [songs] = await conn.query(sql,);
+    
+    res.render('viewCreatedSongs.ejs', {songs})
+})
+
 //Middleware functions
 function isAuthenticated(req, res, next) {
     if (req.session.authenticated) {

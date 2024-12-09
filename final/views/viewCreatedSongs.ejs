@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Created Songs - Music 4 Later</title>
+    <title>All Created Songs - Music 4 Later</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <%- include('./partials/nav') %>
 
-    <h1> Your Created Songs </h1>
+    <h1>All Created Songs</h1>
 
     <% for (let song of songs) { %>
-        [<a href="/create/edit?createId=<%=song.createId%>">Update</a> ] "<%=song.name%>" - <a href="/addCreatedSong?createId=<%=song.createId%>">Add to Playlist</a> <br><br>
+        "<%=song.name%>" - <a href="/addCreatedSong?createId=<%=song.createId%>">Add to Playlist</a> <br><br>
     <% } %>
 
 </body>
