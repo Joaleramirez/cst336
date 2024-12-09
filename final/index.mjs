@@ -443,6 +443,53 @@ app.get('/addSong', async(req,res) => {
     }
 })
 
+app.get('/addCreatedSong', async(req,res) => {
+    if ( req.session.authenticated){
+        let createId = req.query.createId;
+
+        let sql = `SELECT *
+                FROM playlist
+                WHERE userId = ?`;
+        let sqlParams = [req.session.userId];
+        const [playlists] = await conn.query(sql, sqlParams);
+
+        let sql2 = `SELECT *
+                FROM createSong
+                WHERE createId = ?`;
+        let sql2Params = [createId];
+        const [song] = await conn.query(sql2, sql2Params);
+    
+        res.render('addCreatedSong.ejs', {playlists, song})
+    }
+    else {
+        res.redirect("/login");
+    }
+})
+
+app.post('/addCreatedSong', async(req,res) => {
+    let createId = req.body.createId;
+    let playlistId = req.body.playlists;
+
+    let sql = `SELECT *
+                FROM playlistCreate
+                WHERE playlistId = ? AND createId = ?`;
+    let sqlParams = [playlistId,createId];
+    const [song] = await conn.query(sql,sqlParams);
+
+    if (song.length == 1) {
+        console.log("Created song already in playlist")
+        res.render('home.ejs')
+    }
+    else {
+        let sql = `INSERT INTO playlistCreate
+                   (playlistId,createId)
+                    VALUES (?,?)`;
+        const [query] = await conn.query(sql,sqlParams);
+        res.render('home.ejs')
+    }
+
+})
+
 app.post('/addSong', async(req,res) => {
     if ( req.session.authenticated){
         let name = req.body.name;

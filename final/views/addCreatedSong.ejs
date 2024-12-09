@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Song to Playlist - Music 4 Later</title>
+  <title>Add Created Song to Playlist - Music 4 Later</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <%- include('./partials/nav') %>
-    <h1>Add <%-name%></h1>
+    <h1>Add <%-song[0].name%></h1>
 
-    <form action="/addSong" method="post">
-        <input type="hidden" name="name" value="<%=  %>">
+    <form action="/addCreatedSong" method="post">
+        <input type="hidden" name="createId" value="<%= song[0].createId %>">
         <select name="playlists" id="playlist">
             <% for (let playlist of playlists) { %>
                 <option value="<%=playlist.playlistId%>"><%=playlist.playlistName%></option>

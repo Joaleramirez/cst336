@@ -10,7 +10,7 @@
     <%- include('./partials/nav') %>
 
     <% for (let song of songs) { %>
-        [<a href="/create/edit?createId=<%=song.createId%>">Update</a> ] "<%=song.name%>"<br> <br>
+        [<a href="/create/edit?createId=<%=song.createId%>">Update</a> ] "<%=song.name%>" - <a href="/addCreatedSong?createId=<%=song.createId%>">Add to Playlist</a> <br><br>
     <% } %>
 
 </body>
