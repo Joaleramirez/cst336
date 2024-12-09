@@ -1,13 +1,22 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import mysql from 'mysql2/promise';
+import session from 'express-session';
 
 const app = express();
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.use(express.urlencoded({ extended: true }));
+//initializing sessions
+app.set('trust proxy', 1) // trust first proxy
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}))
+
+app.use(express.urlencoded({ extended: true })); // Duplicate url encoded?
 
 const pool = mysql.createPool({
     host: "ethanperegoyprograms.com",
@@ -19,11 +28,11 @@ const pool = mysql.createPool({
   });
   const conn = await pool.getConnection();
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); // Duplicate url encoded?
 
-//GLOBAL VARIABLES
-let releases = [];  // Store releases globally to handle pagination
-let currentIndex = 0;  // Track the current release being viewed
+// GLOBAL VARIABLES
+let releases = [];  
+let currentIndex = 0;  
 let coverArtUrl = null;
 let genres = [];
 let userId = 1;
@@ -40,6 +49,36 @@ app.get('/home', (req, res) => {
 app.get('/login', (req, res) => {
   res.render('login.ejs');
 });
+
+app.post('/login', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    console.log(password);
+
+    let sql = `SELECT *
+               FROM user
+               WHERE user_name = ? 
+               `;
+    const [rows] = await conn.query(sql, [username]); 
+
+    if (rows.length > 0) {  //it found at least one record
+        const storedPassword = rows[0].user_pass;
+
+        // Compare plain text password with the stored password
+        if (password === storedPassword) {
+            req.session.fullName = rows[0].firstName + " " + rows[0].lastName;
+            req.session.authenticated = true;
+            res.render('home.ejs');
+            console.log("login successful")
+        } else {
+            res.redirect("/login"); // Incorrect password
+            console.log("incorrect password")
+        }
+    } else {
+        res.redirect("/login"); // Username not found
+        console.log("username not found")
+    }
+ });
 
 app.get('/signup', (req, res) => {
     res.render('signup.ejs');
@@ -213,12 +252,16 @@ app.get('/playlist/open', async (req, res) => {
 });
 
 app.get('/profile', async (req, res) => {
-    let sql = `SELECT *
+    if ( req.session.authenticated){
+        let sql = `SELECT *
                 FROM user
                 WHERE userId = ?`;
-    let sqlParams = [userId];
-    const [userData] = await conn.query(sql, sqlParams)
-    res.render('profile.ejs', {userData});
+        let sqlParams = [userId];
+        const [userData] = await conn.query(sql, sqlParams)
+        res.render('profile.ejs', {userData});
+    } else {
+        res.redirect("/login");
+    }
   });
 
 app.get('/create', (req, res) => {
@@ -286,6 +329,16 @@ app.get('/createdSongs', async(req,res) => {
     
     res.render('createdSongs.ejs', {songs})
 })
+
+//Middleware functions
+function isAuthenticated(req, res, next) {
+    if (req.session.authenticated) {
+        next();
+    } else {
+        res.redirect("/login");
+    }
+}
+
 const PORT = 10055;
 app.listen(PORT, () => {
     console.log(`Express server running on port ${PORT}`);
