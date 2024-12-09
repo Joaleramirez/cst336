@@ -499,6 +499,28 @@ app.post('/addSong', async(req,res) => {
     }
 })
 
+app.get('/createPlaylist', (req, res) => {
+    if ( req.session.authenticated){
+        res.render('createPlaylist.ejs');
+    }
+    else {
+        res.redirect("/login");
+    }
+});
+
+app.post('/playlist/new', async(req, res) => {
+    let title = req.body.title;
+
+    let sql =  `INSERT INTO playlist
+                (playlistName,userId)
+                VALUES
+                (?,?)`
+    let sqlParams = [title,req.session.userId];
+    const [rows] = await conn.query(sql, sqlParams);
+
+    res.render('home.ejs');
+  });
+
 //Middleware functions
 function isAuthenticated(req, res, next) {
     if (req.session.authenticated) {

@@ -56,5 +56,34 @@
     <% } %>
 
   </main>
+
+  <script>
+
+    const form = document.querySelector('#searchForm');
+    const searchInput = document.querySelector('#search');
+    const artistInput = document.querySelector('#searchArtist');
+    const searchError = document.querySelector('#searchError');
+    const artistError = document.querySelector('#artistError');
+
+    form.addEventListener('submit', function(event) {
+      let isValid = true;
+      searchError.innerText = '';
+      artistError.innerText = '';
+
+      if (searchInput.value.length < 3) {
+        searchError.innerText = 'Search must be at least 3 characters long';
+        isValid = false;
+      }
+
+      if (artistInput.value.length > 0 && artistInput.value.length < 3) {
+        artistError.innerText = 'Artist name must be at least 3 characters long';
+        isValid = false;
+      }
+
+      if (!isValid) {
+        event.preventDefault(); 
+      }
+    });
+  </script>
 </body>
 </html>

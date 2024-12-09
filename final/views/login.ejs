@@ -22,5 +22,33 @@
     </form>
     <p>Don't have an account? <a href="/signup">Sign Up</a></p>
   </main>
+
+  <script>
+    const form = document.querySelector('#loginForm');
+    const usernameInput = document.querySelector('#username');
+    const passwordInput = document.querySelector('#password');
+    const usernameError = document.querySelector('#usernameError');
+    const passwordError = document.querySelector('#passwordError');
+
+    form.addEventListener('submit', function(event) {
+      let isValid = true;
+      usernameError.innerText = '';
+      passwordError.innerText = '';
+
+      if (usernameInput.value.length < 5) {
+        usernameError.innerText = 'Username must be at least 5 characters long';
+        isValid = false;
+      }
+
+      if (passwordInput.value.length < 8) {
+        passwordError.innerText = 'Password must be at least 8 characters long';
+        isValid = false;
+      }
+
+      if (!isValid) {
+        event.preventDefault(); 
+      }
+    });
+  </script>
 </body>
 </html>

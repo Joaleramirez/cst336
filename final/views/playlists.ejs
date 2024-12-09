@@ -14,7 +14,9 @@
       <% for (let playlist of playlists) { %>
         <a href="/playlist/open?playlistId=<%=playlist.playlistId%>"><%=playlist.playlistName%></a><br> <br>
       <% } %>
-    <button>Create New Playlist</button>
+
+      <form action="/createPlaylist"><button>Create New Playlist</button></form>
+    
   </main>
 </body>
 </html>
