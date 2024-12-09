@@ -11,9 +11,13 @@
 
   <main class="center">
     <h1>Search for Music</h1>
-    <form class="form" action="/search" method="POST">
-      <input type="text" name="search" placeholder="Search for Songs or Albums" required>
-      <input type="text" name="search_artist" placeholder="(Optional Artist Name)">
+    <form class="form" id="searchForm" action="/search" method="POST">
+      <input type="text" id="search" name="search" placeholder="Search for Songs or Albums" required>
+      <p id="searchError" style="color: red;"></p>
+
+      <input type="text" id="searchArtist" name="search_artist" placeholder="(Optional Artist Name)">
+      <p id="artistError" style="color: red;"></p>
+      
       <button type="submit">Search</button>
     </form>
 
@@ -52,7 +56,7 @@
       </form>
 
     <% }  else { %>
-      <p>No results found. Please try another search.</p>
+      <p>No results found.</p>
     <% } %>
 
   </main>
