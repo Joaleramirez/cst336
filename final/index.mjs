@@ -355,6 +355,17 @@ app.post('/create/edit', async(req,res) => {
     res.render('profile.ejs', {userData})
 })
 
+app.get('/create/view', async(req,res) => {
+    let createId = req.query.createId;
+    let sql = `SELECT *
+                FROM createSong
+                WHERE createId = ?`;
+    let sqlParams = [createId];
+    const [song] = await conn.query(sql, sqlParams);
+    
+    res.render('createdSong.ejs', {song})
+})
+
 app.get('/createdSongs', async(req,res) => {
     let sql = `SELECT *
                 FROM createSong
